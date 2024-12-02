@@ -1,6 +1,6 @@
 {
-  "name": "ts-code-template",
-  "version": "1.0.0",
+  "name": "Advent of Code 2024",
+  "version": "0.0.12.2",
   "description": "",
   "main": "index.js",
   "scripts": {
