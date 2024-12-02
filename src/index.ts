@@ -2,10 +2,7 @@ import { readFile } from "./util/readFile";
 
 console.log("Hello, Advent of Code! It is Day One.");
 
-function dayOnePartOne() {
-  const filename =
-    process.env.RUN_EXAMPLE === "true" ? "day-01-example.txt" : "day-01.txt";
-  const data = readFile(filename);
+function parseLeftAndRightLists(data: string) {
   const rows = data.split("\n");
   const left: number[] = [];
   const right: number[] = [];
@@ -21,6 +18,16 @@ function dayOnePartOne() {
   left.sort((a, b) => b - a);
   right.sort((a, b) => b - a);
 
+  return [left, right];
+}
+
+function dayOnePartOne() {
+  const filename =
+    process.env.RUN_EXAMPLE === "true" ? "day-01-example.txt" : "day-01.txt";
+  const data = readFile(filename);
+
+  const [left, right] = parseLeftAndRightLists(data);
+
   const differences: number[] = [];
   for (let i = 0; i < left.length; i++) {
     // Determine absolute value of difference
@@ -32,4 +39,33 @@ function dayOnePartOne() {
   console.log("Answer to Part One: ", sum);
 }
 
-dayOnePartOne();
+// dayOnePartOne();
+
+function dayOnePartTwo() {
+  const filename =
+    process.env.RUN_EXAMPLE === "true" ? "day-01-example.txt" : "day-01.txt";
+  const data = readFile(filename);
+
+  const [left, right] = parseLeftAndRightLists(data);
+
+  const numberOfAppearances: Record<number, number> = {};
+  right.forEach((num) => {
+    if (numberOfAppearances[num]) {
+      numberOfAppearances[num] += 1;
+    } else {
+      numberOfAppearances[num] = 1;
+    }
+  });
+
+  const similarityScores: number[] = [];
+
+  left.forEach((num) => {
+    const factor = numberOfAppearances[num] ?? 0;
+    similarityScores.push(num * factor);
+  });
+
+  const sum = similarityScores.reduce((acc, curr) => acc + curr, 0);
+  console.log("Answer to Part Two: ", sum);
+}
+
+dayOnePartTwo();
