@@ -14,8 +14,8 @@ type DayModules = {
   };
 };
 
-const typedDays: DayModules = days as DayModules;
-const dayModule = typedDays[day];
+const dayModules: DayModules = days as DayModules;
+const dayModule = dayModules[day];
 
 dayModule.partOne();
 dayModule.partTwo();
