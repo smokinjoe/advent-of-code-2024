@@ -52,8 +52,6 @@ const parseReports = (
       return isSafe;
     }
 
-    // If we have a dampener, we need to check if we can remove a number
-    // and still have a safe report.
     for (let i = 0; i < reportArray.length; i++) {
       const reportCopy = [...reportArray];
       reportCopy.splice(i, 1);
