@@ -4,6 +4,8 @@ As part of the yearly tradition, this is my attempt at solving each Advent of Co
 
 https://adventofcode.com/2024
 
+You can find my 2023 Advent of Code solutions here: https://github.com/smokinjoe/advent-of-code-2023
+
 ## How to run
 
 From the console, you can provide flags to help run specific days and data:
