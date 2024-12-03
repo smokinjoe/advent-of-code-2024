@@ -12,4 +12,4 @@ eg.
 
 `DAY=two pnpm dev` will perform Part One and Part Two of day 2.
 
-`Day=one pnpm example` will perform Part One and Part Two of day 1 using the example data.
+`DAY=one pnpm example` will perform Part One and Part Two of day 1 using the example data.
