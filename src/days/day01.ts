@@ -2,8 +2,6 @@ import { readFile, getFilename } from "../util/readFile";
 
 const Day = "01";
 
-// console.log("It is Day One.");
-
 function parseLeftAndRightLists(data: string) {
   const rows = data.split("\n");
   const left: number[] = [];
@@ -40,8 +38,6 @@ export function partOne() {
   console.log("Answer to Part One: ", sum);
 }
 
-// partOne();
-
 export function partTwo() {
   const filename = getFilename(Day);
   const data = readFile(filename);
@@ -67,5 +63,3 @@ export function partTwo() {
   const sum = similarityScores.reduce((acc, curr) => acc + curr, 0);
   console.log("Answer to Part Two: ", sum);
 }
-
-// partTwo();
