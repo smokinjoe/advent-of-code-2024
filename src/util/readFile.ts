@@ -1,11 +1,12 @@
 import fs from "fs";
 
-export const getFilename = (day: string): string => {
+export const getFilename = (day: string, part: string = ""): string => {
+  const partString = part ? `-${part}` : "";
+
   const filename =
     process.env.RUN_EXAMPLE === "true"
-      ? `day-${day}-example.txt`
-      : `day-${day}.txt`;
-  // const data = readFile(filename);
+      ? `day-${day}${partString}-example.txt`
+      : `day-${day}${partString}.txt`;
   return filename;
 };
 

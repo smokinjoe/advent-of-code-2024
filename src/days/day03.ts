@@ -10,24 +10,23 @@ import { readFile, getFilename } from "../util/readFile";
 
 const Day = "03";
 
-const extractMulPairs = (data: string): number[][] => {
-  /**
-   * create a regular expression that captures the values between several mul( and )
-   */
-  const re = /mul\((\d+),(\d+)\)/g;
+const mulRegex = /mul\((\d+),(\d+)\)/g;
 
-  const mulArray = data.match(re);
+const extractPair = (item: string): number[] => {
+  const match = mulRegex.exec(item);
+  assertIsDefined(match);
+
+  // --==* The More You Know!
+  // Reset lastIndex to allow multiple exec calls
+  mulRegex.lastIndex = 0;
+  return [parseInt(match[1]), parseInt(match[2])];
+};
+
+const extractMulPairs = (data: string): number[][] => {
+  const mulArray = data.match(mulRegex);
   assertIsDefined(mulArray);
 
-  const pairs = mulArray.map((item) => {
-    const match = re.exec(item);
-    assertIsDefined(match);
-
-    // --==* The More You Know!
-    // Reset lastIndex to allow multiple exec calls
-    re.lastIndex = 0;
-    return [parseInt(match[1]), parseInt(match[2])];
-  });
+  const pairs = mulArray.map(extractPair);
 
   return pairs;
 };
@@ -41,4 +40,43 @@ export const partOne = () => {
   console.log("Solution to Part One: ", sum);
 };
 
-export const partTwo = () => console.log("Stubbed");
+const checkIfDont = (data: string, index: number) => {
+  const segment = data.slice(index, index + 5);
+  return segment === "don't";
+};
+
+const checkIfDo = (data: string, index: number) => {
+  const segment = data.slice(index, index + 2);
+  return !checkIfDont(data, index) && segment === "do";
+};
+
+const parseDataForValidString = (data: string): string => {
+  const stringSegments = [];
+  let trackString = true;
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i] === "d") {
+      if (checkIfDont(data, i)) {
+        trackString = false;
+      } else if (checkIfDo(data, i)) {
+        trackString = true;
+      }
+    }
+
+    if (trackString) {
+      stringSegments.push(data[i]);
+    }
+  }
+
+  return stringSegments.join("");
+};
+
+export const partTwo = () => {
+  const filename = getFilename(Day, "part-two");
+  const data = readFile(filename);
+  const parsed = parseDataForValidString(data);
+  const pairs = extractMulPairs(parsed);
+  const multipliedValuesArray = pairs.map(([x, y]) => x * y);
+  const sum = multipliedValuesArray.reduce((acc, val) => acc + val, 0);
+  console.log("Solution to Part Two: ", sum);
+};
