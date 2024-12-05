@@ -3,20 +3,15 @@ import { readFile, getFilename } from "../util/readFile";
 
 const Day = "04";
 
-export const partOne = () => {
-  const filename = getFilename(Day);
-  const data = readFile(filename);
-
-  const xmasCells = data.split("\n").map((row) => row.split(""));
-
-  const isCorrectCharacter = (
-    x: number,
-    y: number,
-    charToCheck: string
-  ): boolean => {
+const setDayFourMap =
+  (xmasCells: string[][]) =>
+  (x: number, y: number, charToCheck: string): boolean => {
     try {
       if (xmasCells[x] === undefined) return false;
       if (xmasCells[x][y] === undefined) return false;
+
+      //   console.log("X, Y: ", x, y);
+      //   console.log("xmasCells[x][y]: ", xmasCells[x][y]);
 
       return xmasCells[x][y] === charToCheck;
     } catch (error) {
@@ -29,6 +24,14 @@ export const partOne = () => {
       return false;
     }
   };
+
+export const partOne = () => {
+  const filename = getFilename(Day);
+  const data = readFile(filename);
+
+  const xmasCells = data.split("\n").map((row) => row.split(""));
+
+  const isCorrectCharacter = setDayFourMap(xmasCells);
 
   let numXMASes = 0;
 
@@ -119,4 +122,58 @@ export const partOne = () => {
   }
   console.log("Solution to Part One: ", numXMASes);
 };
-export const partTwo = () => console.log("stubbed");
+
+export const partTwo = () => {
+  const filename = getFilename(Day, "part-two");
+  const xmasCells = readFile(filename)
+    .split("\n")
+    .map((row) => row.split(""));
+
+  const isCorrectCharacter = setDayFourMap(xmasCells);
+
+  let numXMASes = 0;
+
+  for (let x = 0; x < xmasCells.length; x++) {
+    for (let y = 0; y < xmasCells[x].length; y++) {
+      if (xmasCells[x][y] === "A") {
+        if (
+          isCorrectCharacter(x - 1, y - 1, "M") &&
+          isCorrectCharacter(x + 1, y - 1, "M") &&
+          isCorrectCharacter(x - 1, y + 1, "S") &&
+          isCorrectCharacter(x + 1, y + 1, "S")
+        ) {
+          numXMASes++;
+        }
+
+        if (
+          isCorrectCharacter(x - 1, y - 1, "M") &&
+          isCorrectCharacter(x + 1, y - 1, "S") &&
+          isCorrectCharacter(x - 1, y + 1, "M") &&
+          isCorrectCharacter(x + 1, y + 1, "S")
+        ) {
+          numXMASes++;
+        }
+
+        if (
+          isCorrectCharacter(x - 1, y - 1, "S") &&
+          isCorrectCharacter(x + 1, y - 1, "S") &&
+          isCorrectCharacter(x - 1, y + 1, "M") &&
+          isCorrectCharacter(x + 1, y + 1, "M")
+        ) {
+          numXMASes++;
+        }
+
+        if (
+          isCorrectCharacter(x - 1, y - 1, "S") &&
+          isCorrectCharacter(x + 1, y - 1, "M") &&
+          isCorrectCharacter(x - 1, y + 1, "S") &&
+          isCorrectCharacter(x + 1, y + 1, "M")
+        ) {
+          numXMASes++;
+        }
+      }
+    }
+  }
+
+  console.log("Solution to Part Two: ", numXMASes);
+};
