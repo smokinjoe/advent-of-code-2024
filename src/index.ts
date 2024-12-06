@@ -1,11 +1,15 @@
 import * as days from "./days";
 
+const { log, clear } = console;
+
 const day = process.env.DAY || "one";
 const isExample = process.env.RUN_EXAMPLE === "true";
 
-console.log("Hello, Advent of Code 2024!");
-console.log(`Running Day ${day}`);
-console.log(`Mode: ${isExample ? "Example" : "Normal"}`);
+clear();
+
+log("Hello, Advent of Code 2024!");
+log(`Running Day ${day}`);
+log(`Mode: ${isExample ? "Example" : "Normal"}`);
 
 type DayModules = {
   [key: string]: {
