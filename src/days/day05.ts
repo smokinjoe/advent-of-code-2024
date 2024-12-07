@@ -47,6 +47,8 @@ class UpdateValidator {
   private ruleOrdering: Record<number, number[]>;
   private updates: number[][];
   private validUpdates: number[][] = [];
+  private invalidUpdates: number[][] = [];
+  private repairedUpdates: number[][] = [];
 
   constructor(ruleOrdering: Record<number, number[]>, updates: number[][]) {
     this.ruleOrdering = ruleOrdering;
@@ -80,6 +82,8 @@ class UpdateValidator {
 
       if (valid) {
         this.validUpdates.push(updates);
+      } else {
+        this.invalidUpdates.push(updates);
       }
 
       valid = true;
@@ -92,6 +96,65 @@ class UpdateValidator {
 
   public getValidityScore = () => {
     return this.validUpdates.reduce((acc, curr) => {
+      const middleElement = curr[(curr.length - 1) / 2];
+      return acc + middleElement;
+    }, 0);
+  };
+
+  public fixInvalidUpdates = () => {
+    const repairedUpdates: number[][] = [];
+    log("invalid updates");
+    logTable(this.invalidUpdates);
+
+    this.invalidUpdates.forEach((invalidUpdates) => {
+      const fixedUpdates = [...invalidUpdates];
+      console.table(fixedUpdates);
+      //   const repairedUpdate: number[] = [];
+      invalidUpdates.forEach((update, index) => {
+        if (index > 0) {
+          const prevUpdate = fixedUpdates[index - 1];
+          const currentUpdate = update;
+
+          if (!this.isValidUpdate([prevUpdate, currentUpdate])) {
+            fixedUpdates[index - 1] = currentUpdate;
+            fixedUpdates[index] = prevUpdate;
+
+            console.table(fixedUpdates);
+
+            // repairedUpdate.push(prevUpdate);
+            // repairedUpdate.push(currentUpdate);
+          } else {
+            fixedUpdates[index - 1] = prevUpdate;
+            fixedUpdates[index] = currentUpdate;
+
+            // repairedUpdate.push(currentUpdate);
+            // repairedUpdate.push(prevUpdate);
+          }
+        }
+
+        // if (index < invalidUpdates.length - 1) {
+        //   const currentUpdate = update;
+        //   const nextUpdate = invalidUpdates[index + 1];
+
+        //   if (!this.isValidUpdate([currentUpdate, nextUpdate])) {
+        //     repairedUpdate.push(nextUpdate);
+        //   } else {
+        //     repairedUpdate.push(currentUpdate);
+        //   }
+        // }
+      });
+      repairedUpdates.push(fixedUpdates);
+    });
+
+    this.repairedUpdates = repairedUpdates;
+  };
+
+  public getRepairedUpdates = () => {
+    return this.repairedUpdates;
+  };
+
+  public getRepairedValidityScore = () => {
+    return this.repairedUpdates.reduce((acc, curr) => {
       const middleElement = curr[(curr.length - 1) / 2];
       return acc + middleElement;
     }, 0);
@@ -116,4 +179,24 @@ export const partOne = () => {
   log("Part One: ", validityScore);
 };
 
-export const partTwo = () => log("Part Two: Stubbed");
+export const partTwo = () => {
+  //   const filename = getFilename(Day);
+  const filename = "day-05-mini-example.txt";
+
+  const data = readFile(filename).split("\n");
+
+  const [rulesData, updateData] = parseData(data);
+
+  const ruleOrdering = parseRuleOrder(rulesData);
+  const updates = updateData.map((updateString) =>
+    updateString.split(",").map((x) => parseInt(x))
+  );
+
+  const validator = new UpdateValidator(ruleOrdering, updates);
+  validator.validateUpdates();
+  validator.fixInvalidUpdates();
+  log("Repaired Updates");
+  logTable(validator.getRepairedUpdates());
+  const validityScore = validator.getRepairedValidityScore();
+  log("Part Two: ", validityScore);
+};
