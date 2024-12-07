@@ -1,7 +1,6 @@
 import { assertIsDefined } from "../util/assertions";
+import { log } from "../util/log";
 import { readFile, getFilename } from "../util/readFile";
-
-const { log, table: logTable } = console;
 
 const Day = "05";
 
@@ -101,52 +100,29 @@ class UpdateValidator {
     }, 0);
   };
 
-  public fixInvalidUpdates = () => {
-    const repairedUpdates: number[][] = [];
-    log("invalid updates");
-    logTable(this.invalidUpdates);
+  public repairInvalidUpdates = () => {
+    const updatesToRepair = [...this.invalidUpdates];
 
-    this.invalidUpdates.forEach((invalidUpdates) => {
-      const fixedUpdates = [...invalidUpdates];
-      console.table(fixedUpdates);
-      //   const repairedUpdate: number[] = [];
-      invalidUpdates.forEach((update, index) => {
-        if (index > 0) {
-          const prevUpdate = fixedUpdates[index - 1];
-          const currentUpdate = update;
+    let swapping = false;
 
-          if (!this.isValidUpdate([prevUpdate, currentUpdate])) {
-            fixedUpdates[index - 1] = currentUpdate;
-            fixedUpdates[index] = prevUpdate;
+    do {
+      swapping = false;
+      for (let i = 0; i < updatesToRepair.length; i++) {
+        const updates = updatesToRepair[i];
+        for (let j = 0; j < updates.length - 1; j++) {
+          const currentUpdate = updates[j];
+          const nextUpdate = updates[j + 1];
 
-            console.table(fixedUpdates);
-
-            // repairedUpdate.push(prevUpdate);
-            // repairedUpdate.push(currentUpdate);
-          } else {
-            fixedUpdates[index - 1] = prevUpdate;
-            fixedUpdates[index] = currentUpdate;
-
-            // repairedUpdate.push(currentUpdate);
-            // repairedUpdate.push(prevUpdate);
+          if (!this.isValidUpdate([currentUpdate, nextUpdate])) {
+            updates[j] = nextUpdate;
+            updates[j + 1] = currentUpdate;
+            swapping = true;
           }
         }
+      }
+    } while (swapping);
 
-        // if (index < invalidUpdates.length - 1) {
-        //   const currentUpdate = update;
-        //   const nextUpdate = invalidUpdates[index + 1];
-
-        //   if (!this.isValidUpdate([currentUpdate, nextUpdate])) {
-        //     repairedUpdate.push(nextUpdate);
-        //   } else {
-        //     repairedUpdate.push(currentUpdate);
-        //   }
-        // }
-      });
-      repairedUpdates.push(fixedUpdates);
-    });
-
-    this.repairedUpdates = repairedUpdates;
+    this.repairedUpdates = updatesToRepair;
   };
 
   public getRepairedUpdates = () => {
@@ -180,9 +156,7 @@ export const partOne = () => {
 };
 
 export const partTwo = () => {
-  //   const filename = getFilename(Day);
-  const filename = "day-05-mini-example.txt";
-
+  const filename = getFilename(Day);
   const data = readFile(filename).split("\n");
 
   const [rulesData, updateData] = parseData(data);
@@ -194,9 +168,7 @@ export const partTwo = () => {
 
   const validator = new UpdateValidator(ruleOrdering, updates);
   validator.validateUpdates();
-  validator.fixInvalidUpdates();
-  log("Repaired Updates");
-  logTable(validator.getRepairedUpdates());
+  validator.repairInvalidUpdates();
   const validityScore = validator.getRepairedValidityScore();
   log("Part Two: ", validityScore);
 };
