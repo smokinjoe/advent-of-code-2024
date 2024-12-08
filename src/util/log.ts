@@ -1,10 +1,16 @@
 const { log, table, group, groupEnd } = console;
 
-const logTable = (message: string, data: unknown, label?: string) => {
-  group(label ?? message);
-  log(message);
+type LogTable<T> = {
+  message?: string;
+  data: T;
+  label?: string;
+};
+
+const logTable = <T>({ message, data, label }: LogTable<T>) => {
+  if (label) group(label);
+  if (message) log(message);
   table(data);
-  groupEnd();
+  if (label) groupEnd();
 };
 
 export { log, logTable, group, groupEnd };
