@@ -1,31 +1,15 @@
-import { getFilename, readFile } from "../util/readFile";
-import { log, logTable } from "../util/log";
-import { assertNever } from "../util/assertions";
+import { getFilename, readFile } from "../../util/readFile";
+import { log, logTable } from "../../util/log";
+import { assertNever } from "../../util/assertions";
 
-const Day = "06";
+import { Direction, direction, Day, wait } from "./util";
 
-const wait = () => new Promise((resolve) => setTimeout(resolve, 25));
-
-const directionOrder = ["north", "east", "south", "west"];
-const Direction = {
-  north: 0,
-  east: 1,
-  south: 2,
-  west: 3,
-};
-
-const direction: Record<number, string> = {
-  0: "^",
-  1: ">",
-  2: "v",
-  3: "<",
-};
-
-class Map {
+class PartOne {
   private orientation = Direction.north;
   private position = { x: -1, y: -1 };
   private traveledMap: string[][];
   private exitFound = false;
+  private traveledCoords: string[] = [];
 
   constructor(private map: string[][]) {
     this.map = map;
@@ -67,31 +51,38 @@ class Map {
     const { x, y } = this.position;
     const lookAhead = this.nextPosition(x, y);
 
-    if (
-      this.map[lookAhead.y] === undefined ||
-      this.map[lookAhead.y][lookAhead.x] === undefined
-    ) {
-      this.exitFound = true;
-    } else {
-      if (this.map[lookAhead.y][lookAhead.x] === "#") {
-        return true;
-      }
+    if (this.map[lookAhead.y][lookAhead.x] === "#") {
+      return true;
     }
   }
 
   private step() {
     this.traveledMap[this.position.y][this.position.x] = "X";
+    // this.traveledCoords.push(
+    //   `${this.position.x}:${this.position.y}:${this.orientation}`
+    // );
+
+    const { x, y } = this.position;
+    const next = this.nextPosition(x, y);
+    if (
+      this.traveledMap[next.y] === undefined ||
+      this.traveledMap[next.y][next.x] === undefined
+    ) {
+      this.exitFound = true;
+      return;
+    }
 
     if (this.atBoundary()) {
       this.turn();
       return;
     }
 
-    const { x, y } = this.position;
     // this.map[y][x] = "X";
-    const next = this.nextPosition(x, y);
     this.position = next;
-    // this.map[next.y][next.x] = `${direction[this.orientation]}`;
+
+    // DEBUG line
+    this.traveledMap[next.y][next.x] = `${direction[this.orientation]}`;
+    this.traveledCoords.push(`${next.x}:${next.y}:${this.orientation}`);
   }
 
   private turn() {
@@ -114,19 +105,23 @@ class Map {
   }
 
   private async debug() {
-    await wait();
-    // console.clear();
-    // logTable({ data: this.traveledMap });
-    log(
-      "Position: ",
-      this.position,
-      direction[this.orientation],
-      this.traveledMap[this.position.y][this.position.x]
-    );
+    await wait(100);
+    console.clear();
+    logTable({ data: this.traveledMap });
+    const lastTraveledCoord =
+      this.traveledCoords[this.traveledCoords.length - 1];
+    log("Last traveled coord: ", lastTraveledCoord);
+    // log(
+    //   "Position: ",
+    //   this.position,
+    //   direction[this.orientation],
+    //   this.traveledMap[this.position.y][this.position.x]
+    // );
   }
 
   public async findExit() {
     while (!this.exitFound) {
+      // await this.debug();
       this.step();
     }
   }
@@ -143,6 +138,10 @@ class Map {
 
     return count;
   }
+
+  public getTraveledMap() {
+    return this.traveledMap;
+  }
 }
 
 export const partOne = () => {
@@ -150,9 +149,8 @@ export const partOne = () => {
   const data = readFile(filename);
   const mapData = data.split("\n").map((line) => line.split(""));
 
-  const map = new Map(mapData);
+  const map = new PartOne(mapData);
   map.findExit();
   const answer = map.distinctPositions();
   log("Part One number of distinct positions: ", answer);
 };
-export const partTwo = () => console.log("Not implemented");
