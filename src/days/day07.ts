@@ -39,9 +39,10 @@ const evaluate = (
 
   const add = operand + nextOperand;
   const multiply = operand * nextOperand;
+  const concat = parseInt(`${operand}${nextOperand}`);
 
   if (index === remainingOperands.length - 1) {
-    if (add === target || multiply === target) {
+    if (add === target || multiply === target || concat === target) {
       return true;
     }
 
@@ -50,7 +51,8 @@ const evaluate = (
 
   return (
     evaluate(index + 1, target, add, remainingOperands) ||
-    evaluate(index + 1, target, multiply, remainingOperands)
+    evaluate(index + 1, target, multiply, remainingOperands) ||
+    evaluate(index + 1, target, concat, remainingOperands)
   );
 };
 
