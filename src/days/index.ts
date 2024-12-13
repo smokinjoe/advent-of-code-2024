@@ -5,5 +5,6 @@ import * as four from "./day04";
 import * as five from "./day05";
 import * as six from "./day06/";
 import * as seven from "./day07";
+import * as eight from "./day08";
 
-export { one, two, three, four, five, six, seven };
+export { one, two, three, four, five, six, seven, eight };
